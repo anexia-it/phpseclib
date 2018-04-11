@@ -652,7 +652,7 @@ class SSH2
      * @see self::setReadTimeout()
      * @access private
      */
-    private $readTimeout = 10;
+    private $readTimeout = 120;
 
     /**
      * Current Timeout
