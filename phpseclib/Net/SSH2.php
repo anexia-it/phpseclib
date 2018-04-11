@@ -647,6 +647,14 @@ class SSH2
     private $timeout;
 
     /**
+     * Read Timeout
+     *
+     * @see self::setReadTimeout()
+     * @access private
+     */
+    private $readTimeout = 10;
+
+    /**
      * Current Timeout
      *
      * @see self::_get_channel_packet()
@@ -2667,6 +2675,18 @@ class SSH2
     }
 
     /**
+     * Set read response timeout
+     *
+     * Timeout for read responses
+     *
+     * @param $readTimeout
+     */
+    public function setReadTimeout($readTimeout)
+    {
+        $this->readTimeout = $readTimeout;
+    }
+
+    /**
      * Get the output from stdError
      *
      * @access public
@@ -2994,6 +3014,7 @@ class SSH2
      */
     public function read($expect = '', $mode = self::READ_SIMPLE)
     {
+        $readStart = time();
         $this->curTimeout = $this->timeout;
         $this->is_timeout = false;
 
@@ -3028,6 +3049,12 @@ class SSH2
             }
 
             $this->interactiveBuffer.= $response;
+
+            $readElapsed = time() - $readStart;
+            if($readElapsed > $this->readTimeout) {
+                $this->is_timeout = true;
+                return false;
+            }
         }
     }
 
